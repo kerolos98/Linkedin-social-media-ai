@@ -1,0 +1,7 @@
+fastapi
+python-dotenv
+httpx
+langchain
+langchain-mcp-adapters
+langchain-litellm
+uvicorn

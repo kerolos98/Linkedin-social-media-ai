@@ -1,0 +1,44 @@
+# Environment files (VERY IMPORTANT)
+.env
+*.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Git
+.git/
+.gitignore
+
+# IDEs
+.vscode/
+.idea/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Tests/cache
+.pytest_cache/
+.mypy_cache/
+
+# Docker stuff (if any local build artifacts exist)
+docker-compose.override.yml
+
+# Node (only if you ever add frontend later)
+node_modules/
+
+# Local builds
+dist/
+build/
