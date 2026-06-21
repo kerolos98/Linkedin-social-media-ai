@@ -1,56 +1,49 @@
 from dotenv import load_dotenv
 import os
+
+# Load variables from .env file
 load_dotenv()
+
+# 1. Exa Web Search Server (Remote MCP)
 WEBSEARCH = {
     "exa": {
-    "transport": "stdio",
-    "command": "npx",
-    "args": [
-        "-y",
-        "mcp-remote",
-        f"https://mcp.exa.ai/mcp?apiKey={os.getenv('EXA_API_KEY')}"
-    ]
+        "transport": "stdio",
+        "command": "npx",
+        "args": [
+            "-y",
+            "mcp-remote",
+            f"https://mcp.exa.ai/mcp?apiKey={os.getenv('EXA_API_KEY')}"
+        ]
+    }
 }
-}
+
+# 2. Filesystem Server (Replaced Docker with native @modelcontextprotocol/server-filesystem)
 FILESYSTEM = {
     "filesystem": {
         "transport": "stdio",
-        "command": "docker",
+        "command": "npx",
         "args": [
-            "run",
-            "-i",
-            "--rm",
-            "-v",
-            f"{os.getcwd()}:/workspace",
-            "mcp/filesystem",
-            "/workspace"
+            "-y",
+            "@modelcontextprotocol/server-filesystem",
+            os.getcwd()  # Grants access to your current working directory natively
         ]
     }
 }
+
+# 3. LinkedIn Server (Replaced Docker with native npx execution)
 LINKEDIN = {
     "linkedin": {
         "transport": "stdio",
-        "command": "docker",
+        "command": "npx",
         "args": [
-            "run",
-            "-i",
-            "--rm",
-            "-e", f"LINKEDIN_TOKEN={os.getenv('LINKEDIN_TOKEN')}",
-            "-e", f"LINKEDIN_ORG_ID={os.getenv('LINKEDIN_ORG_ID')}",
-            "mcp/linkedin-company"
-        ]
-    }
-}
-MEDIUM = {
-    "medium": {
-        "transport": "stdio",
-        "command": "docker",
-        "args": [
-            "run",
-            "-i",
-            "--rm",
-            "-e", f"MEDIUM_TOKEN={os.getenv('MEDIUM_TOKEN')}",
-            "mcp/medium"
-        ]
+            "-y",
+            "mcp-server-linkedin-company"  # Standard npm package variant
+        ],
+        # Explicitly passing environment variables to the native process
+        "env": {
+            "LINKEDIN_TOKEN": os.getenv("LINKEDIN_TOKEN"),
+            "LINKEDIN_ORG_ID": os.getenv("LINKEDIN_ORG_ID"),
+            "PATH": os.getenv("PATH") # Keeps system path so 'npx' can be found
+        }
     }
 }
