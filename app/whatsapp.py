@@ -7,7 +7,7 @@ from app.agents.publisher_agent import PublisherAgent
 from app.agents.writer_agent import WriterAgent
 from app.agents.research_agent import ResearchAgent
 
-#load_dotenv()
+load_dotenv('app/.env')
 
 app = FastAPI()
 
@@ -127,6 +127,8 @@ async def send_whatsapp_message(to_number: str, message: str):
 
     async with httpx.AsyncClient() as client:
         response = await client.post(url, headers=headers, json=payload, timeout=30)
+        print(response.status_code)
+        print(response.text)
     return response
 
 
