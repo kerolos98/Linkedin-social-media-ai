@@ -8,14 +8,14 @@ from app.agents.excutive import ExcutiveAgent
 from app.agents.publisher_agent import PublisherAgent
 from app.agents.writer_agent import WriterAgent
 from app.agents.research_agent import ResearchAgent
-
-load_dotenv('app/.env')
+from app.debug_network import debug_network
+#load_dotenv('app/.env')
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("whatsapp_bot")
 
 app = FastAPI()
-
+app.include_router(debug_network)
 WHATSAPP_TOKEN = os.getenv("WHATSAPP_TOKEN")
 PHONE_ID = os.getenv("WHATSAPP_PHONE_ID")
 VERIFY_TOKEN = os.getenv("VERIFY_TOKEN")
