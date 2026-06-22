@@ -148,10 +148,6 @@ async def webhook(request: Request):
     do_research_followup = False
     try:
         value = data["entry"][0]["changes"][0]["value"]
-        send_message = await send_whatsapp_message(
-            to_number=OWNER_NUMBER,
-            message=f"Available commands: create linkedin post, text that number on my behalf \n\n if you want to create a linkedin post or text on behalf of your number. Please type the command followed by the content.",
-        )
         if "messages" not in value:
             return {"status": "ok"}
 
@@ -172,6 +168,11 @@ async def webhook(request: Request):
 
         if message["type"] == "text" and sender == OWNER_NUMBER:
             text = message["text"]["body"].strip()
+            if text.lower() == "help, Jarvis":
+                send_message = await send_whatsapp_message(
+                to_number=OWNER_NUMBER,
+                message=f"Available commands: create linkedin post, text that number on my behalf \n\n if you want to create a linkedin post or text on behalf of your number. Please type the command followed by the content.",
+            )
             if "create linkedin post" in text.lower():
                 send_message = await send_whatsapp_message(
                     to_number=sender,
