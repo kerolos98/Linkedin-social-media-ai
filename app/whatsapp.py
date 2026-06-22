@@ -129,6 +129,7 @@ async def send_whatsapp_message(to_number: str, message: str):
         response = await client.post(url, headers=headers, json=payload, timeout=30)
         print(response.status_code)
         print(response.text)
+        print("headers:", response.headers)
     return response
 
 
