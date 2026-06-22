@@ -1,15 +1,18 @@
 import re
 import logging
+import os
+import requests
+import asyncio
 from fastapi import FastAPI, Request, HTTPException, BackgroundTasks
 from dotenv import load_dotenv
-import os
-import httpx
+
 from app.agents.excutive import ExcutiveAgent
 from app.agents.publisher_agent import PublisherAgent
 from app.agents.writer_agent import WriterAgent
 from app.agents.research_agent import ResearchAgent
 from app.debug_network import router as debug_router
-#load_dotenv('app/.env')
+
+# load_dotenv('app/.env')
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("whatsapp_bot")
@@ -38,7 +41,9 @@ conversation_state = {}
 # If you scale to multiple workers/instances, move this to Redis or a DB
 # so state is shared across processes.
 
-AFFIRMATIVE_RE = re.compile(r"\b(yes|yep|yeah|sure|ok|okay|post|publish)\b", re.IGNORECASE)
+AFFIRMATIVE_RE = re.compile(
+    r"\b(yes|yep|yeah|sure|ok|okay|post|publish)\b", re.IGNORECASE
+)
 NEGATIVE_RE = re.compile(r"\b(no|nah|not|don'?t)\b", re.IGNORECASE)
 
 
@@ -50,7 +55,7 @@ def is_negative(text: str) -> bool:
     return bool(NEGATIVE_RE.search(text))
 
 
-async def send_whatsapp_message(to_number: str, message: str):
+def _send_whatsapp_message_sync(to_number: str, message: str):
     url = f"https://graph.facebook.com/v25.0/{PHONE_ID}/messages"
 
     headers = {
@@ -65,14 +70,26 @@ async def send_whatsapp_message(to_number: str, message: str):
         "text": {"body": message},
     }
 
-    try:
-        async with httpx.AsyncClient() as client:
-            response = await client.post(url, headers=headers, json=payload, timeout=30)
-            logger.info("WhatsApp send status=%s body=%s", response.status_code, response.text)
-            return response
-    except Exception as e:
-        logger.exception("Failed to send WhatsApp message to %s: %s", to_number, e)
-        return None
+    response = requests.post(
+        url,
+        headers=headers,
+        json=payload,
+        timeout=30,
+    )
+
+    print(response.status_code)
+    print(response.text)
+
+    return response
+
+
+async def send_whatsapp_message(to_number: str, message: str):
+    # run blocking requests safely inside async FastAPI
+    return await asyncio.to_thread(
+        _send_whatsapp_message_sync,
+        to_number,
+        message,
+    )
 
 
 async def create_linkedin_post(text: str, sender: str):
