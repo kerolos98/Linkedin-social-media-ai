@@ -171,11 +171,13 @@ async def webhook(request: Request):
         if message["type"] == "text" and sender == OWNER_NUMBER:
             text = message["text"]["body"].strip()
             if text.lower() == "help, Jarvis":
+                print("Sending help message to owner...")
                 send_message = await send_whatsapp_message(
                 to_number=OWNER_NUMBER,
                 message=f"Available commands: create linkedin post, text that number on my behalf \n\n if you want to create a linkedin post or text on behalf of your number. Please type the command followed by the content.",
             )
             if "create linkedin post" in text.lower():
+                print("Received command to create LinkedIn post. Asking for topic details...")
                 send_message = await send_whatsapp_message(
                     to_number=sender,
                     message="about what topic would you like to create a LinkedIn post? Please provide some details.",
@@ -186,6 +188,7 @@ async def webhook(request: Request):
                 linkedin_followup = False
                 return {"status": "ok"}
             if "text that number on my behalf" in text.lower():
+                print("Received command to text on behalf. Asking for number and message...")
                 await send_whatsapp_message(
                     to_number=sender,
                     message="Please provide the number and the message you want to send.",
